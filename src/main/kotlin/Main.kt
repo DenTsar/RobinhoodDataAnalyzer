@@ -1,10 +1,7 @@
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import responses_approved.options.OptionOrder
 import responses_approved.options.enums.Side
 import responses_approved.options.enums.OrderState
-import responses_approved.options.enums.PositionEffect
 import kotlin.math.abs
 
 fun main() {
@@ -12,17 +9,10 @@ fun main() {
 
     val optionOrders = runBlocking {
         rh.getOptionOrders().results
-    }.filter { it.state==OrderState.FILLED }.filter { it.chainSymbol!="JG" }
+    }.filter { it.state==OrderState.FILLED }
 
     println(optionOrders.sumOf { abs(it.legs[0].executions[0].price - it.price) }*100)
-//        if(it.chainSymbol=="SBUX")
-//            println(Json.encodeToString(it))
-//        if(it.legs[0].executions[0].price!=it.price) {
-////            println(Json.encodeToString(it))
-//            println(it.legs[0].side)
-//            println(it.legs[0].executions[0].price - it.price)
-//        }
-//    }
+
     println(optionOrders.size)
 
     println(optionOrders.flatMap { it.legs }.size)
@@ -31,9 +21,9 @@ fun main() {
 //        if(it.chainSymbol=="JG")
 //            println(Json.encodeToString(it))
         it.legs.forEach { i ->
-//            if(i.side==PositionEffect.OPEN && i.positionEffect!=PositionEffect.OPEN)
+//            if(i.side==Side.BUY && i.positionEffect!=Side.BUY)
 //                println("A"+it)
-//            if(i.side==PositionEffect.CLOSE && i.positionEffect!=PositionEffect.CLOSE)
+//            if(i.side==Side.SELL && i.positionEffect!=Side.SELL)
 //                println("B"+it)
         }
     }
@@ -50,16 +40,14 @@ fun main() {
 //    val qq = getDistinct(optionOrders,OptionOrder::chainId)
 //    println(qq.size)
 
-//    for(i in optionOrders){
-//        if(i.legs.size!=1)
-//            println(i.legs.size)
-//    }
+    val optionPositions = runBlocking { rh.getOptionAggregatePosition() }.results
+        .flatMap { it.legs }.map { it.option.dropLast(1).split("/").last() }
 
-    val optionOrderMap = optionOrders.groupBy { it.legs[0].option.dropLast(1).split("/").last() }
-        .mapValues { it.value.groupBy { i -> i.legs[0].positionEffect } }
+    val optionOrderMap = optionOrders.flatMap { it.legs }.groupBy { it.option.dropLast(1).split("/").last() }
+        .mapValues { it.value.groupBy { i -> i.side } }.filterKeys { !optionPositions.contains(it) }
 
 
-    println(optionOrderMap.values.sumOf { (it[PositionEffect.OPEN]?.size ?: 0)+ (it[PositionEffect.CLOSE]?.size ?: 0)})
+    println(optionOrderMap.values.sumOf { (it[Side.BUY]?.size ?: 0)+ (it[Side.SELL]?.size ?: 0)})
 
     val optionInstruments = optionOrderMap.keys.chunked(64).map {
         runBlocking { rh.getOptionInstruments(it) }.results
@@ -84,11 +72,11 @@ fun main() {
         println(summary)
 
         println("Buys")
-        val buysAve = averageCost(v[PositionEffect.OPEN])
+        val buysAve = totalAmount(v[Side.BUY])
         println("Average: $buysAve")
 
         println("Sells")
-        val sellsAve = averageCost(v[PositionEffect.CLOSE])
+        val sellsAve = totalAmount(v[Side.SELL])
         println("Average: $sellsAve")
 
         val profit = (sellsAve-buysAve)*100
@@ -99,34 +87,25 @@ fun main() {
 
     println(tt)
     println(tt.sumOf { it.second })
-//    for ((k,v) in optionOrderMap){
-//        val option = optionInstruments[k] ?: return
-//        with(option){
-//            println("$chainSymbol $strikePrice $type $expirationDate")
-//        }
-//
-//        println("Buys")
-//        val buysAve = averageCost(v[PositionEffect.OPEN])
-//        println("Average: $buysAve")
-//
-//        println("Sells")
-//        val sellsAve = averageCost(v[PositionEffect.OPEN])
-//        println("Average: $sellsAve")
-//
-//        println("Profit: ${(sellsAve-buysAve)*100}")
-//    }
-//    val curated = y.filter { it.value.size==2 && it.value.any { i -> i.legs[0].side == PositionEffect.OPEN } && i.value.any { it.legs[0].side == PositionEffect.CLOSE }}
+    println(tt.size)
+    println("Lost total: ${tt.filter { it.second < 0 }.size} Gained: ${tt.filter { it.second > 0 }.size}")
+    val zz = tt.groupBy { (first) -> first.split(" ")[0] }
+        .map { (key, value) -> key to value.sumOf { it.second } }.sortedBy { it.second }
+    println(zz)
+    println(zz.size)
+    println("Lost total: ${zz.filter { it.second < 0 }.size} Gained: ${zz.filter { it.second > 0 }.size}")
+
 }
 
 fun <T> getDistinct(data: List<T>, method: T.() -> Any?): List<Any?> {
     return data.distinctBy { it.method() }.map { it.method() }
 }
 
-fun averageCost(orders: List<OptionOrder>?): Double {
+fun totalAmount(orders: List<OptionOrder.LegA>?): Double {
     return orders?.let{ order ->
-        order.sumOf {
-            println("${it.legs[0].executions[0].price}+${it.quantity}")
-            it.quantity*it.legs[0].executions[0].price
+        order.sumOf { (executions) ->
+            println("${executions[0].price}+${executions[0].quantity}")
+            executions.sumOf { it.quantity*it.price }
         }
     } ?: 0.0
 }
