@@ -1,3 +1,3 @@
 
-rootProject.name = "RobinhoodManager2"
+rootProject.name = "RobinhoodDataAnalyzer"
 
