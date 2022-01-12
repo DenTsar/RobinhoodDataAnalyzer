@@ -40,7 +40,7 @@ data class OptionAggregatePosition(
     @SerialName("trade_value_multiplier")
     val tradeValueMultiplier: Double,
     @SerialName("updated_at")
-    val updatedAt: Instant
+    val updatedAt: Instant,
 ) {
     @Serializable
     data class LegB(
@@ -57,6 +57,6 @@ data class OptionAggregatePosition(
         @SerialName("ratio_quantity")
         val ratioQuantity: Int,
         @SerialName("strike_price")
-        val strikePrice: String
+        val strikePrice: String,
     )
 }

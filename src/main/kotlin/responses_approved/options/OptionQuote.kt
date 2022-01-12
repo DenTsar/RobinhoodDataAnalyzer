@@ -3,7 +3,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 //Page of https://api.robinhood.com/marketdata/options/?ids=7b4de5e2-5b73-42d0-be7e-b140081940e5
 @Serializable
-data class OptionQuoteOrOptionMarketData(
+data class OptionQuote(
     @SerialName("adjusted_mark_price")
     val adjustedMarkPrice: String,
     @SerialName("adjusted_mark_price_round_down")
@@ -59,5 +59,5 @@ data class OptionQuoteOrOptionMarketData(
     val symbol: String,
     val theta: String?,
     val vega: String?,
-    val volume: Int
+    val volume: Int,
 )

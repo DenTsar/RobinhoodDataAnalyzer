@@ -102,3 +102,13 @@ enum class OptionState {
     @SerialName("expired")
     EXPIRED,
 }
+
+@Serializable
+enum class Bounds{
+    @SerialName("regular")
+    REGULAR,
+    @SerialName("24_7")
+    TWENTY_FOUR_SEVEN,
+    @SerialName("trading")
+    TRADING,//only for stocks???
+}

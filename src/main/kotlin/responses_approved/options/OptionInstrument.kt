@@ -44,5 +44,5 @@ data class OptionInstrument(
     val type: OptionType,
     @SerialName("updated_at")
     val updatedAt: Instant,
-    val url: String
+    val url: String,
 )

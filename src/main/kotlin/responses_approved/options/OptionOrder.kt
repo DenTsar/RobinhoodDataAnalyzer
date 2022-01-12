@@ -52,7 +52,7 @@ data class OptionOrder(
     val trigger: Trigger,
     val type: Type,
     @SerialName("updated_at")
-    val updatedAt: Instant
+    val updatedAt: Instant,
 ) {
     @Serializable
     data class LegA(
@@ -73,7 +73,7 @@ data class OptionOrder(
         val shortStrategyCode: String,
         val side: Side,
         @SerialName("strike_price")
-        val strikePrice: Double
+        val strikePrice: Double,
     ){
         @Serializable
         data class Execution(
@@ -82,7 +82,7 @@ data class OptionOrder(
             val quantity: Double,
             @SerialName("settlement_date")
             val settlementDate: LocalDate,
-            val timestamp: Instant
+            val timestamp: Instant,
         )
     }
 }
