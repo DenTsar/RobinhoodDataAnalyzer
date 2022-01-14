@@ -1,13 +1,11 @@
-@file:UseSerializers(InstantAsStringSerializable::class,DateAsStringSerializable::class)
-
 package responses_approved.options
 
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import responses_approved.options.enums.*
-import java.time.Instant
-import java.time.LocalDate
 
 
 @Serializable

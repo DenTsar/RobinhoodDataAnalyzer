@@ -1,14 +1,11 @@
-@file:UseSerializers(InstantAsStringSerializable::class)
-
 package responses_approved.options
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
 import responses_approved.options.enums.Direction
 import responses_approved.options.enums.Strategy
-import java.time.Instant
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 
 //Page of https://api.robinhood.com/options/aggregate_positions/?nonzero=True&strategy_code=7b4de5e2-5b73-42d0-be7e-b140081940e5_L1
 //(Not a page of) https://api.robinhood.com/options/aggregate_positions/ad92f895-723f-4e07-8f8d-746a32b4b923/
@@ -45,7 +42,6 @@ data class OptionAggregatePosition(
     @Serializable
     data class LegB(
         @SerialName("expiration_date")
-        @Serializable(with = DateAsStringSerializable::class)
         val expirationDate: LocalDate,
         val id: String,
         val option: String,

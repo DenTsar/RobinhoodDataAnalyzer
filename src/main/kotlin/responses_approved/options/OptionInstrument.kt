@@ -1,16 +1,13 @@
-@file:UseSerializers(InstantAsStringSerializable::class,DateAsStringSerializable::class)
-
 package responses_approved.options
 
 import MinTicks
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
 import responses_approved.options.enums.OptionState
 import responses_approved.options.enums.OptionType
 import responses_approved.options.enums.Tradability
-import java.time.Instant
-import java.time.LocalDate
 
 //Page of https://api.robinhood.com/options/instruments/?chain_id=1941ed52-7389-446b-b6fb-7c461f29c8be&expiration_dates=2021-10-15&state=active&type=call
 //https://api.robinhood.com/options/instruments/7c3afc04-a02e-418f-bf88-ef4c84b0047d/
@@ -34,7 +31,7 @@ data class OptionInstrument(
     @SerialName("rhs_tradability")
     val rhsTradability: Tradability,
     @SerialName("sellout_datetime")
-    val selloutDatetime: String,
+    val selloutDatetime: Instant,
     @SerialName("short_strategy_code")
     val shortStrategyCode: String,
     val state: OptionState,

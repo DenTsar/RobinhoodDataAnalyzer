@@ -14,8 +14,15 @@ import kotlin.math.abs
 fun main() {
     val rh = RHRepository()
 
+    val hist = runBlocking { rh.getOptionQuote2() }
+    println(hist)
 
-    analyzeOptions(rh,true)
+    println("2022-01-11T06:29:17.399000Z".toInstant())
+
+//    println(ZonedDateTime.parse("2022-01-11T06:29:17.399000-05:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME).withZoneSameInstant(
+//        ZoneId.systemDefault()))
+
+    analyzeOptions(rh,false)
 
 }
 
