@@ -20,7 +20,8 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
-    implementation("com.squareup.okio:okio:3.0.0")
+    implementation("com.ionspin.kotlin:bignum:0.3.3")
+    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.2")
 
 
     implementation("io.ktor:ktor-client-core:$ktorVersion")

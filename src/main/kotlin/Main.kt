@@ -1,3 +1,5 @@
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -5,8 +7,6 @@ import responses_approved.options.OptionOrder
 import responses_approved.options.enums.Side
 import responses_approved.options.enums.OrderState
 import java.io.File
-import java.math.BigDecimal
-import java.math.BigInteger
 import kotlinx.datetime.*
 
 import kotlin.math.abs
@@ -18,6 +18,8 @@ fun main() {
     println(hist)
 
     println("2022-01-11T06:29:17.399000Z".toInstant())
+
+
 
 //    println(ZonedDateTime.parse("2022-01-11T06:29:17.399000-05:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME).withZoneSameInstant(
 //        ZoneId.systemDefault()))
@@ -37,9 +39,9 @@ fun totalAmount(legs: List<OptionOrder.LegA>?): BigDecimal {
 //        }
 //    } ?: 0.0
     return legs?.flatMap { it.executions }
-        ?.sumOf {
-            println("${it.price}x${it.quantity}")
-            it.quantity.toBigDecimal()*it.price.toBigDecimal()
+        ?.fold(BigDecimal.ZERO) { acc, e ->
+            println("${e.price}x${e.quantity}")
+            acc + e.quantity.toBigDecimal()*e.price.toBigDecimal()
         } ?: BigDecimal.ZERO
 }
 
@@ -64,13 +66,14 @@ fun calcProfits(
 
         println("Buys")
         val buysTotal = totalAmount(legs[Side.BUY])
-        println("Total: $buysTotal")
+        println("Total: ${buysTotal.toStringExpanded()}")
 
         println("Sells")
         val sellsTotal = totalAmount(legs[Side.SELL])
-        println("Total: $sellsTotal")
+        println("Total: ${sellsTotal.toStringExpanded()}")
 
-        val profit = ((sellsTotal-buysTotal) * 100.0.toBigDecimal()).toInt()
+        val profit = ((sellsTotal-buysTotal)*100.0.toBigDecimal()).toBigInteger().intValue()
+//        println(((sellsTotal-buysTotal)*100.bn).toBigInt().toInt())
         println("Profit: $profit")
 
         summary to profit
