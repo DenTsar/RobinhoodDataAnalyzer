@@ -47,6 +47,8 @@ enum class Trigger {
 enum class Type {
     @SerialName("limit")
     LIMIT,
+    @SerialName("market")
+    MARKET,
 }
 
 @Serializable

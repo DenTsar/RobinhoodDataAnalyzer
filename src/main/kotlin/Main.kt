@@ -8,24 +8,32 @@ import responses_approved.options.enums.Side
 import responses_approved.options.enums.OrderState
 import java.io.File
 import kotlinx.datetime.*
+import responses_approved.crypto.CryptoOrder
+import responses_approved.general.Page
 
 import kotlin.math.abs
 
 fun main() {
     val rh = RHRepository()
 
-    val hist = runBlocking { rh.getOptionQuote2() }
-    println(hist)
+    val cryptoOrders = runBlocking {
+        loopPagenated(rh,method = RHRepository::getCryptoOrders,null)
+    }
 
-    println("2022-01-11T06:29:17.399000Z".toInstant())
+    println(cryptoOrders.size)
+//    listOf(CryptoOrder::state,CryptoOrder::side,CryptoOrder::timeInForce,CryptoOrder::type,CryptoOrder::currencyPairId)
+//            .forEach{ println(it.name+getDistinct(cryptoOrders,it)) }
 
 
+//    analyzeOptions(rh,false)
 
-//    println(ZonedDateTime.parse("2022-01-11T06:29:17.399000-05:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME).withZoneSameInstant(
-//        ZoneId.systemDefault()))
+}
 
-    analyzeOptions(rh,false)
-
+suspend fun <T> loopPagenated(rh: RHRepository, method: suspend RHRepository.(c: String?) -> Page<T>,cursor: String?): List<T>{
+    val p = rh.method(cursor)
+    return p.next?.let {
+        p.results.plus(loopPagenated(rh,method,it.split("=")[1]))
+    } ?: p.results
 }
 
 fun <T> getDistinct(data: List<T>, method: T.() -> Any?): List<Any?> =

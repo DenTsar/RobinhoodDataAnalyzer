@@ -1,4 +1,7 @@
+import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import responses_approved.crypto.CryptoOrder
 import responses_approved.general.Page
 import responses_approved.options.OptionAggregatePosition
 import responses_approved.options.OptionInstrument
@@ -9,9 +12,12 @@ class RHRepository{
     val GENERAL_URL = "https://api.robinhood.com"
     val CRYPTO_URL = "https://nummus.robinhood.com"
 
-//    suspend fun getCryptoOrders(): Page<CryptoOrder> {
-//        return client.get("$GENERAL_URL/orders")
-//    }
+    suspend fun getCryptoOrders(cursor: String? = null): Page<CryptoOrder> {
+        return client.get("$CRYPTO_URL/orders/"){
+//            parameter("page_size",page_size)
+            parameter("cursor",cursor)
+        }
+    }
 //    suspend fun getHistoricalCryptoData(id: String, bounds : String, interval : String, span : String) : HistoricalCrypto{
 //        return client.get("$GENERAL_URL/marketdata/forex/historicals/$id/?bounds=$bounds&interval=$interval&span=$span")
 //    }
@@ -26,10 +32,12 @@ class RHRepository{
 //        return client.get("$GENERAL_URL/marketdata/options/?ids=7b4de5e2-5b73-42d0-be7e-b140081940e5")
 //    }
 //
-//    suspend fun getOptionQuote2() : String{
-//        val response : HttpResponse = client.get("$GENERAL_URL/marketdata/options/?ids=7b4de5e2-5b73-42d0-be7e-b140081940e5")
-//        return response.receive()
-//    }
+    suspend fun getOptionQuote2() : String{
+        return client.get<HttpResponse>(
+            "$GENERAL_URL/marketdata/options/strategy/historicals/?bounds=regular&ids=a4653aa9-b9da-44cd-9d20-6b5b8a5e286f&interval=30minute&ratios=1&span=all&start=2021-11-06T15%3A00%3A00.000Z&types=long&end=2021-12-13T15%3A00%3A00.000Z"
+        ).receive()
+//        return response.toString()//a4653aa9-b9da-44cd-9d20-6b5b8a5e286f
+    }
 
     suspend fun getOptionOrders(page_size: Int = 1000, chain_ids: List<String>? = null): Page<OptionOrder> {
         return client.get("$GENERAL_URL/options/orders/"){
@@ -56,4 +64,5 @@ class RHRepository{
             parameter("nonzero",nonzero.toString().replaceFirstChar(Char::uppercase))
         }
     }
+
 }

@@ -23,7 +23,7 @@ val client = HttpClient(CIO) {
         header("Authorization", "Bearer "+PrivateConst.API_KEY)
         url {
             protocol = URLProtocol.HTTPS
-            host = "api.robinhood.com"
+//            host = "api.robinhood.com"
 //            encodedPath = "$basePath$encodedPath"
         }
         Parameters.build { urlEncodingOption = UrlEncodingOption.DEFAULT }
